@@ -6,16 +6,17 @@
     <section class="searchBar">
         <form method="get" action="">
             <div>
-                <input type="text" name="name" placeholder="Nom">
+                <input type="text" name="name" placeholder="Rechercher">
             </div>
             <select name="context">
-                <option value="name">Toutes</option>
-                <option value="folders">Folder</option>
-                <option value="wishes">WishList</option>
+                <option value="name">Toutes les cartes</option>
+                <option value="folders">mon Folder</option>
+                <option value="wishes">ma WishList</option>
             </select>
             <button type="submit">Filtrer</button>
         </form>
     </section>
+
     <section class="cards">
         {% for card in toShow %}
             <div class="card-container">
@@ -23,10 +24,31 @@
                     <h5>{{ card.name }}</h5>
                 </div>
                 <div class="card-buttons">
-                    <a href="{{ path('app_addFolder', {cardId: card.id, quality: 3, exchangeable: true}) }}">Ajouter au folder</a>
-                    {% if card in userFolder %}
-                        <span>Carte {{ cardCounts[card.id] }} fois dans votre Folder</span>
+                {# Ajouter au folder #}
+                    <form action="{{ path('app_addFolder', {cardId: card.id}) }}" method="POST">
+                        <label for="quality">Qualité :</label>
+                        <select name="quality" id="quality">
+                            <option value="5">5/5</option>
+                            <option value="4">4/5</option>
+                            <option value="3">3/5</option>
+                            <option value="2">2/5</option>
+                            <option value="1">1/5</option>
+                        </select>
+
+                        <label for="exchangeable">Échangeable :</label>
+                        <input type="checkbox" name="exchangeable" id="exchangeable" value="1">
+
+                        <button type="submit">Ajouter au folder</button>
+                    </form>
+                {# Quantité possédée #}
+                    {% if card in userCardsInFolder %}
+                        <span>Carte {{ userFolderDetails[card.id]|length }} fois dans votre Folder</span>
+                        {% for folder in userFolderDetails[card.id] %}
+                                <div>Qualité : {{ folder.quality }}</div>
+                                <div>Échangeable : {{ folder.exchangeable ? 'Oui' : 'Non' }}</div>
+                        {% endfor %}
                     {% endif %}
+                {# WishList #}
                     {% if card in userWishes %}
                         <span>Carte souhaitée</span>
                         <a href="{{ path('app_removeWish', {cardId: card.id}) }}">Retirer aux souhaits</a>

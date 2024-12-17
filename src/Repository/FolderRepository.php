@@ -16,6 +16,10 @@ class FolderRepository extends ServiceEntityRepository
         parent::__construct($registry, Folder::class);
     }
 
+    public function getFoldersInfos(): array
+    {
+        
+    }
     //    /**
     //     * @return Folder[] Returns an array of Folder objects
     //     */

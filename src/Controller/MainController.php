@@ -16,54 +16,64 @@ class MainController extends AbstractController
     #[Route('/', name: 'app_main')]
     public function index(Request $request, CardRepository $cardRep): Response
     {
+        $user = $this->getUser();
+
         // Filtrer les cartes à afficher
         $context = $request->query->get('context'); // cards, folders, wishes
         $name = $request->query->get('name');
-        $toShow = $cardRep->findByFilter($context, $name, $this->getUser());
-        
-        $user = $this->getUser();
-        $cardCounts = [];
-        
-        $userFolder = $user ? $user->getFolders()->map(fn($folder) => $folder->getCard())->toArray() : [];
-        $userWishes = $user ? $user->getWish()->toArray() : [];
+        $toShow = $cardRep->findByFilter($context, $name, $user);
 
-        // Comptage des cartes du folder de l'utilisateur connecté
+        $userCardsInFolder = $user ? $user->getFolders()->map(fn($folder) => $folder->getCard())->toArray() : [];
+        $userWishes = $user ? $user->getWish()->toArray() : [];
+        
+        // Cartes et infos du folder de l'utilisateur connecté
         if ($user) {
             foreach ($user->getFolders() as $folder) {
                 $card = $folder->getCard();
                 $cardId = $card->getId();
                 
-                // Compter la quantité de la même carte dans le dossier
-                if (isset($cardCounts[$cardId])) {
-                    $cardCounts[$cardId]++;
-                } else {
-                    $cardCounts[$cardId] = 1;
-                }
+                // Regrouper les informations par carte
+                $userFolderDetails[$cardId][] = [
+                    'quality' => $folder->getQuality(),
+                    'exchangeable' => $folder->isExchangeable(),
+                ];
             }
         }
         
 
         return $this->render('main/index.html.twig', [
             'toShow' => $toShow,
-            'userFolder' => $userFolder,
+            'userCardsInFolder' => $userCardsInFolder,
             'userWishes' => $userWishes,
-            'cardCounts' => $cardCounts,
+            'userFolderDetails' => $userFolderDetails
         ]);
     }
 
-    #[Route('/addFolder/{cardId}/{quality}/{exchangeable}', name: 'app_addFolder')]
-    public function addFolder(int $cardId, int $quality, bool $exchangeable, CardRepository $cardRep, EntityManagerInterface $em):Response
+    #[Route('/addFolder/{cardId}', name: 'app_addFolder', methods: ['POST'])]
+    public function addFolder(
+        int $cardId, 
+        CardRepository $cardRep, 
+        Request $request, 
+        EntityManagerInterface $em
+    ): Response
     {
         $user = $this->getUser();
         $card = $cardRep->find($cardId);
 
-        $folder = new Folder;
+        // Récupération des données du formulaire
+        $quality = (int) $request->request->get('quality');
+        $exchangeable = $request->request->get('exchangeable') === '1';
+
+        // Création du nouveau Folder
+        $folder = new Folder();
         $folder->setCard($card);
         $folder->setOwner($user);
         $folder->setQuality($quality);
         $folder->setExchangeable($exchangeable);
+
         $em->persist($folder);
         $em->flush();
+
         return $this->redirectToRoute('app_main');
     }
 
