@@ -53,7 +53,7 @@ class MainController extends AbstractController
                 $target = $match['folder']->getOwner(); // Récupérer l'utilisateur cible
 
                 if ($target) {
-                    $reverseMatches = $userRep->findReciprocity($em, $user, $target);
+                    $reverseMatches = $folderRep->findReciprocity($em, $user, $target);
 
                     // Ajouter les données dans la structure souhaitée
                     $exchangeData[] = [

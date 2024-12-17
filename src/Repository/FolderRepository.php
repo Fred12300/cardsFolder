@@ -62,15 +62,15 @@ class FolderRepository extends ServiceEntityRepository
             'SELECT f 
             FROM App\Entity\Folder f 
             WHERE f.owner = :userId
-            AND f.exchangeable = true'
+            AND f.isExchangeable = true'
         )->setParameter('userId', $userId)
         ->getResult();
 
         // Récupérer la wishlist de l'utilisateur cible
         $targetWishes = $em->createQueryBuilder()
-            ->select('c.id', 'c.name', 'c.type', 'c.imageUrl')
+            ->select('c.id', 'c.name', 'c.type', 'c.image')
             ->from('App\Entity\User', 'u')
-            ->join('u.wishes', 'c')
+            ->join('u.wish', 'c')
             ->where('u.id = :targetId')
             ->setParameter('targetId', $targetId)
             ->getQuery()
@@ -81,7 +81,7 @@ class FolderRepository extends ServiceEntityRepository
         // Trouver les correspondances entre la wishlist et les folders
         foreach ($targetWishes as $wish) {
             foreach ($myFolders as $folder) {
-                if ($wish['id'] == $folder->getCardr()->getId()) {
+                if ($wish['id'] == $folder->getCard()->getId()) {
                     $reverseMatches[] = [
                         'wish' => $wish,
                         'folder' => $folder,
