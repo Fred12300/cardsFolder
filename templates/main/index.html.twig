@@ -3,6 +3,7 @@
 {% block title %}CardsFolder{% endblock %}
 
 {% block body %}
+{# SearchBar #}
     <section class="searchBar">
         <form method="get" action="">
             <div>
@@ -17,12 +18,43 @@
         </form>
     </section>
 
+{# Matches #}
+    <section class="matches">
+        {% set length = exchangeData|length %}
+        {% if length > 0 %}
+            <div class="exchanges-zone">
+                <div>{{ length }} échange(s) possible(s)</div>
+                <div class="exchanges">
+                    {% for exchange in exchangeData %}
+                        {% set wish = exchange.matches.wish %}
+                        {% set reverse = exchange.reverse %}
+                            <div class="d-flex gap-2 ">
+                                <div class="d-flex flex-column text-center align-items-center justify-content-center">
+                                    <span>{{ wish.name }}</span>
+                                    <span>Possédée par {{ exchange.matches.folder.owner.name }} échange contre :</span>
+                                </div>
+                                {% for card in reverse %}
+                                    <div class="d-flex flex-column text-center align-items-center justify-content-center">
+                                        <span>- {{ card.wish.name }}</span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p>Aucun match trouvé.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    </section>
+
+{# Cards #}
     <section class="cards">
         {% for card in toShow %}
             <div class="card-container">
                 <div class="card-content">
                     <h5>{{ card.name }}</h5>
                 </div>
+            {# Boutons #}
                 <div class="card-buttons">
                 {# Ajouter au folder #}
                     <form action="{{ path('app_addFolder', {cardId: card.id}) }}" method="POST">
@@ -56,7 +88,6 @@
                         <a href="{{ path('app_addWish', {cardId: card.id}) }}">Ajouter aux souhaits</a>
                     {% endif %}
                 </div>
-                
             </div>
         {% endfor %}
     </section>
