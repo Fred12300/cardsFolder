@@ -18,76 +18,11 @@
         </form>
     </section>
 
-{# Matches #}
-    <section class="matches">
-        {% set length = exchangeData|length %}
-        {% if length > 0 %}
-            <div class="exchanges-zone">
-                <div>{{ length }} échange(s) possible(s)</div>
-                <div class="exchanges">
-                    {% for exchange in exchangeData %}
-                        {% set wish = exchange.matches.wish %}
-                        {% set reverse = exchange.reverse %}
-                            <div class="d-flex gap-2 ">
-                                <div class="d-flex flex-column text-center align-items-center justify-content-center">
-                                    <span>{{ wish.name }}</span>
-                                    <span>Possédée par {{ exchange.matches.folder.owner.name }} échange contre :</span>
-                                </div>
-                                {% for card in reverse %}
-                                    <div class="d-flex flex-column text-center align-items-center justify-content-center">
-                                        <span>- {{ card.wish.name }}</span>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        {% else %}
-                            <p>Aucun match trouvé.</p>
-                    {% endfor %}
-                </div>
-            </div>
-        {% endif %}
-    </section>
-
 {# Cards #}
     <section class="cards">
         {% for card in toShow %}
             <div class="card-container">
-                <div class="card-content">
-                    <h5>{{ card.name }}</h5>
-                </div>
-            {# Boutons #}
-                <div class="card-buttons">
-                {# Ajouter au folder #}
-                    <form action="{{ path('app_addFolder', {cardId: card.id}) }}" method="POST">
-                        <label for="quality">Qualité :</label>
-                        <select name="quality" id="quality">
-                            <option value="5">5/5</option>
-                            <option value="4">4/5</option>
-                            <option value="3">3/5</option>
-                            <option value="2">2/5</option>
-                            <option value="1">1/5</option>
-                        </select>
-
-                        <label for="exchangeable">Échangeable :</label>
-                        <input type="checkbox" name="exchangeable" id="exchangeable" value="1">
-
-                        <button type="submit">Ajouter au folder</button>
-                    </form>
-                {# Quantité possédée #}
-                    {% if card in userCardsInFolder %}
-                        <span>Carte {{ userFolderDetails[card.id]|length }} fois dans votre Folder</span>
-                        {% for folder in userFolderDetails[card.id] %}
-                                <div>Qualité : {{ folder.quality }}</div>
-                                <div>Échangeable : {{ folder.exchangeable ? 'Oui' : 'Non' }}</div>
-                        {% endfor %}
-                    {% endif %}
-                {# WishList #}
-                    {% if card in userWishes %}
-                        <span>Carte souhaitée</span>
-                        <a href="{{ path('app_removeWish', {cardId: card.id}) }}">Retirer aux souhaits</a>
-                    {% else %}
-                        <a href="{{ path('app_addWish', {cardId: card.id}) }}">Ajouter aux souhaits</a>
-                    {% endif %}
-                </div>
+                {% include "/main/card.html.twig" %} 
             </div>
         {% endfor %}
     </section>

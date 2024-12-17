@@ -1,7 +1,14 @@
+a {
+    text-decoration: none;
+    color: black;
+}
+
 .cards {
     display: flex;
     flex-wrap: wrap;
     gap: 1em;
+    width: 100vw;
+    justify-content: center;
 }
 
 .card-container {
@@ -10,5 +17,65 @@
     gap: .5em;
     border: 1px solid black;
     border-radius: 10px;
-    padding: .5em;
+    padding: .2em;
+    min-width: 10em;
+    width: 100%;
+    max-width: 15em;
+}
+
+.card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1em;
+}
+
+.card-content h5 {
+    margin: 0;
+    padding: 0;
+}
+
+.card-content h6 {
+    margin: 0;
+    padding: 0;
+}
+
+.card-image {
+    width: 98%;
+    margin: 0;
+    padding: 0;
+    max-width: 20em;
+}
+
+.card-buttons {
+    display: flex;
+    width: 100%;
+    padding: 1em;
+    justify-content: space-evenly;
+}
+
+.card-icon {
+    width: 2em;
+}
+
+.miniatures {
+    display: flex;
+    gap: .5em;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.miniature {
+    width: 4em;
+}
+
+.miniature img {
+    width: 4em;
+}
+
+.folder-add {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
