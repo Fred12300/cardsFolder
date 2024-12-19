@@ -19,6 +19,7 @@ class MainController extends AbstractController
     public function index(Request $request, CardRepository $cardRep, UserRepository $userRep, FolderRepository $folderRep, EntityManagerInterface $em): Response
     {
         $user = $this->getUser();
+        $matches = [];
 
         // Filtrer les cartes à afficher // toShow
         $context = $request->query->get('context'); // cards, folders, wishes

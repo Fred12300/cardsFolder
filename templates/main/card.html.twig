@@ -1,95 +1,139 @@
-{# Card-content #}
-    <div class="card-content">
-        <img class="card-image" src="{{ card.image}}" alt="Image Introuvable" class="">
-        <h5>{{ card.name }}</h5>
-        <h6>{{ card.type }}</h6>
-    </div>
+{# Gestion erreur images #}
+    <script>
+    function handleImageError(imageElement) {
+        const fallbackDiv = document.createElement('div');
+        fallbackDiv.innerHTML = '<img class="card-image image-fallback" src="/no-image.jpg" alt="Image Introuvable">'
+        imageElement.replaceWith(fallbackDiv);
+    }
+    </script>
 
-{# Boutons #}
-    <div class="card-buttons">
-    {# WishList BTN #}
-        {% if card in userWishes %}
-            <a href="{{ path('app_removeWish', {cardId: card.id}) }}"><img class="card-icon" src="/icons/favouriteOn.png" alt="icone wishlist ON" title='Retirer aux souhaits'></a>
-        {% else %}
-            <a href="{{ path('app_addWish', {cardId: card.id}) }}"><img class="card-icon" src="/icons/favouriteOff.png" alt="icone wishlist OFF" title='Ajouter aux souhaits'></a>
-        {% endif %}
-    {# Matches BTN #}
-        {% set length = exchangeData|length %}
-        {% set isMatching = false %}
-        {% if length > 0 %}
-            {% for match in matches %}
-                {% if match.wish.id == card.id %}
-                    {% set isMatching = true %}
+<div class="card-main">
+    {# Card-content #}
+        <div class="card-content">
+            <img class="card-image" src="{{ card.image}}" alt="Image Introuvable" onerror=handleImageError(this)>
+            <h5>{{ card.name }}</h5>
+            <h6>{{ card.type }}</h6>
+        </div>
+    
+    {# Boutons #}
+        <div class="card-buttons">
+        {# WishList BTN #}
+            {% if card in userWishes %}
+                <a href="{{ path('app_removeWish', {cardId: card.id}) }}"><img class="card-icon" src="/icons/favouriteOn.png" alt="icone wishlist ON" title='Retirer aux souhaits'></a>
+            {% else %}
+                <a href="{{ path('app_addWish', {cardId: card.id}) }}"><img class="card-icon" src="/icons/favouriteOff.png" alt="icone wishlist OFF" title='Ajouter aux souhaits'></a>
+            {% endif %}
+        {# Matches BTN #}
+            {% set length = exchangeData|length %}
+            {% set isMatching = false %}
+            {% if length > 0 %}
+                {% for match in matches %}
+                    {% if match.wish.id == card.id %}
+                        {% set isMatching = true %}
+                    {% endif %}
+                {% endfor %}
+                {% if isMatching %}
+                    <img src="/icons/exchangeColor.png" alt="exchange icon" class="card-icon" title="Echange possible">
                 {% endif %}
-            {% endfor %}
-            {% if isMatching %}
-                <img src="/icons/exchangeColor.png" alt="exchange icon" class="card-icon" title="Echange possible">
             {% endif %}
-        {% endif %}
-    {# Details BTN #}
-        <a href=""><img class="card-icon" src="/icons/search.png" alt="search icon">
-            {# Quantité possédée #}
-            {% if card in userCardsInFolder %}
-                <span>x{{ userFolderDetails[card.id]|length }}</span>
-                {# {% for folder in userFolderDetails[card.id] %}
-                        <div>Qualité : {{ folder.quality }}</div>
-                        <div>Échangeable : {{ folder.exchangeable ? 'Oui' : 'Non' }}</div>
-                {% endfor %} #}
-            {% endif %}
-        </a>
-    </div>
-
-{# Exchange Matches #}
-{# Matches #}
-    <div class="matches">
-        {% set length = exchangeData|length %}
-        {% if length > 0 %}
-            <div class="exchanges-zone">
-                <div class="exchanges">
-                    {% for exchange in exchangeData %}
-                        {% set wish = exchange.matches.wish %}
-                        {% set reverse = exchange.reverse %}
-                        {% if wish.id == card.id %}
-                            <div class="">
-                                <div class="">
-                                    <span>{{ exchange.matches.folder.owner.name }} l'échange contre :</span>
-                                </div>
-                                <div class="miniatures">
-                                    {% for card in reverse %}
-                                        <div class="miniature">
-                                            <small>{{ card.wish.name }}</small>
-                                            <img src="{{ card.wish.image }}" alt="Image introuvable">
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                </div>
+        {# Details BTN #}
+            <div onclick=toggle({{card.id}})>
+                <img class="card-icon" src="/icons/search.png" alt="search icon">
+                    {# Quantité possédée #}
+                    {% if card in userCardsInFolder %}
+                        <span>x{{ userFolderDetails[card.id]|length }}</span>
+                    {% endif %}
             </div>
-        {% else %}
-                <p>Aucun match trouvé.</p>
-        {% endif %}
-    </div>
-
-{# Folder #}
-{# Ajouter au folder #}
-    <form action="{{ path('app_addFolder', {cardId: card.id}) }}" method="POST" class="folder-add">
-        <div class="card-quality">
-            <label for="quality">Qualité :</label>
-            <select name="quality" id="quality">
-                <option value="5" title="état neuf">5/5</option>
-                <option value="4" title="légère usure">4/5</option>
-                <option value="3" title="usure modérée">3/5</option>
-                <option value="2" title="forte usure">2/5</option>
-                <option value="1" title="endomagée">1/5</option>
-            </select>
         </div>
+</div>
 
-        <div class="card-exchangeable">
-            <label for="exchangeable">Échangeable :</label>
-            <input type="checkbox" name="exchangeable" id="exchangeable" value="1">
+<div class="card-more closedH"  id="quickH{{card.id}}">
+    {# Exchange Matches #}
+    {# Matches #}
+        <div class="matches">
+            {% set length = exchangeData|length %}
+            {% if length > 0 %}
+                <div class="exchanges-zone">
+                    <div class="exchanges">
+                        {% for exchange in exchangeData %}
+                            {% set wish = exchange.matches.wish %}
+                            {% set reverse = exchange.reverse %}
+                            {% if wish.id == card.id %}
+                                <div class="exchange">
+                                    <div class="">
+                                        <span>{{ exchange.matches.folder.owner.name }} l'échange contre :</span>
+                                    </div>
+                                    <div class="miniatures">
+                                        {% for card in reverse %}
+                                            <div class="miniature">
+                                                <small>{{ card.wish.name }}</small>
+                                                <img src="{{ card.wish.image }}"  onerror="handleImageError(this)">
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+                    <p>Aucun match trouvé.</p>
+            {% endif %}
         </div>
+    
+    {# My Folder #}
+        {# <div class="my-folder">
+            <div class="my-cards">
+                {% for card in userCardsInFolder %}
+                    <div class="card-miniature">
+                        <small>{{ card.name }}</small>
+                        <small>x{{ userFolderDetails[card.id]|length }}</small>
+                        <div class="each-card">
+                            {% for folder in userFolderDetails[card.id] %}
+                                <div class="mini-card">
+                                    <div class="miniature d-flex">
+                                        <img src="{{card.image}}" alt="" onerror=handleImageError(this)>
+                                    </div>
+                                    <div class="spec">
+                                        <p class="mini-text">Q:{{ folder.quality }}</p>
+                                        <p class="mini-text">E:{{ folder.exchangeable ? 'Oui' : 'Non' }}</p>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div> #}
+        {# Ajouter au folder #}
+            <form action="{{ path('app_addFolder', {cardId: card.id}) }}" method="POST" class="folder-add">
+                <div class="card-quality">
+                    <label for="quality">Qualité :</label>
+                    <select name="quality" id="quality">
+                        <option value="5" title="état neuf">5/5</option>
+                        <option value="4" title="légère usure">4/5</option>
+                        <option value="3" title="usure modérée">3/5</option>
+                        <option value="2" title="forte usure">2/5</option>
+                        <option value="1" title="endomagée">1/5</option>
+                    </select>
+                </div>
+    
+                <div class="card-exchangeable">
+                    <label for="exchangeable">Échangeable :</label>
+                    <input type="checkbox" name="exchangeable" id="exchangeable" value="1">
+                </div>
+    
+                <button type="submit">Ajouter au folder</button>
+            </form>
+        </div>
+</div>
 
-        <button type="submit">Ajouter au folder</button>
-    </form> 
+{# JS pour le quick-folder #}
+<script>
+    function toggle(cardId) {
+    const target = document.querySelector(`#quickH${cardId}`)
+    target.classList.toggle('closedH');
+    const parent = target.parentElement;
+    const targetPosition = parent.getBoundingClientRect().top  + window.scrollY;
+    window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+}
+</script>

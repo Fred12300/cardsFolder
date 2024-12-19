@@ -13,13 +13,17 @@ a {
 
 .card-container {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: .5em;
     border: 1px solid black;
     border-radius: 10px;
     padding: .2em;
     min-width: 10em;
-    width: 100%;
+    width: fit-content;
+    height: 28em;
+}
+
+.card-main {
     max-width: 15em;
 }
 
@@ -62,8 +66,8 @@ a {
 .miniatures {
     display: flex;
     gap: .5em;
-    overflow-x: auto;
-    overflow-y: hidden;
+    overflow: auto;
+    width: 95%;
 }
 
 .miniature {
@@ -78,4 +82,86 @@ a {
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.image-fallback {
+    border-radius: 10px;
+}
+
+.card-more {
+    width: 30em;
+    display: flex ;
+    transition: all .1s ease-in-out;
+    overflow: hidden;
+    gap: 1em;
+}
+
+.matches {
+    width: 20em;
+    border: 1px solid black;
+    padding: .5em;
+    border-radius: 10px;
+
+}
+
+.closedH {
+    width: 0;
+    padding: 0;
+    margin: 0;
+}
+
+.exchange {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.my-folder {
+    width: 10em;
+    border: 1px solid black;
+    padding: .5em;
+    border-radius: 10px;
+}
+
+.my-cards {
+    height: 85%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    align-items: center;
+}
+
+.card-miniature {
+    border: 1px solid rgb(212, 210, 210);
+    padding: 0 .5em;
+    border-radius: 10px;
+    margin: .5em 0;
+}
+
+.mini-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.d-flex {
+    display: flex;
+    align-items: center;
+    gap: .5em;
+    overflow-x: auto;
+}
+
+.mini-text {
+    font-size: small;
+}
+
+.spec {
+    display: flex;
+    gap: .3em;
+    font-stretch: condensed;
+}
+
+.each-card {
+    width: 98%;
+    display: flex;
+    gap: .3em;
+    flex-wrap: wrap;
 }
