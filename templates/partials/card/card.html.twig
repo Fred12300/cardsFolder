@@ -7,47 +7,9 @@
     }
     </script>
 
-<div class="card-main">
-    {# Card-content #}
-        <div class="card-content">
-            <img class="card-image" src="{{ card.image}}" alt="Image Introuvable" onerror=handleImageError(this)>
-            <h5>{{ card.name }}</h5>
-            <h6>{{ card.type }}</h6>
-        </div>
-    
-    {# Boutons #}
-        <div class="card-buttons">
-        {# WishList BTN #}
-            {% if card in userWishes %}
-                <a href="{{ path('app_removeWish', {cardId: card.id}) }}"><img class="card-icon" src="/icons/favouriteOn.png" alt="icone wishlist ON" title='Retirer aux souhaits'></a>
-            {% else %}
-                <a href="{{ path('app_addWish', {cardId: card.id}) }}"><img class="card-icon" src="/icons/favouriteOff.png" alt="icone wishlist OFF" title='Ajouter aux souhaits'></a>
-            {% endif %}
-        {# Matches BTN #}
-            {% set length = exchangeData|length %}
-            {% set isMatching = false %}
-            {% if length > 0 %}
-                {% for match in matches %}
-                    {% if match.wish.id == card.id %}
-                        {% set isMatching = true %}
-                    {% endif %}
-                {% endfor %}
-                {% if isMatching %}
-                    <img src="/icons/exchangeColor.png" alt="exchange icon" class="card-icon" title="Echange possible">
-                {% endif %}
-            {% endif %}
-        {# Details BTN #}
-            <div onclick=toggle({{card.id}})>
-                <img class="card-icon" src="/icons/search.png" alt="search icon">
-                    {# Quantité possédée #}
-                    {% if card in userCardsInFolder %}
-                        <span>x{{ userFolderDetails[card.id]|length }}</span>
-                    {% endif %}
-            </div>
-        </div>
-</div>
+{% include "/partials/card/cardMain.html.twig" %}
 
-<div class="card-more closedH"  id="quickH{{card.id}}">
+<div class="card-more" id="quickH{{card.id}}">
     {# Exchange Matches #}
     {# Matches #}
         <div class="matches">
@@ -127,13 +89,23 @@
         </div>
 </div>
 
-{# JS pour le quick-folder #}
-<script>
+{# JS #}
+{# <script>
+// Déploiement de fenêtre
     function toggle(cardId) {
     const target = document.querySelector(`#quickH${cardId}`)
     target.classList.toggle('closedH');
     const parent = target.parentElement;
-    const targetPosition = parent.getBoundingClientRect().top  + window.scrollY;
-    window.scrollTo({ top: targetPosition, behavior: 'smooth' });
-}
-</script>
+    parent.classList.toggle('opened');
+    //const targetPosition = parent.getBoundingClientRect().top  + window.scrollY - 20;
+    //window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+    //Fermeture si clic en dehors
+    document.addEventListener('click', function handleOutsideClick(event) {
+            if (!parent.contains(event.target)) {
+                target.classList.add('closedH');
+                parent.classList.toggle('opened');
+                document.removeEventListener('click', handleOutsideClick);
+            }
+        });
+    }
+</script> #}

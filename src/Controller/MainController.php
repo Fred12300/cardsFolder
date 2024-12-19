@@ -2,11 +2,10 @@
 
 namespace App\Controller;
 
-use App\Entity\Card;
 use App\Entity\Folder;
 use App\Repository\CardRepository;
-use App\Repository\FolderRepository;
-use App\Repository\UserRepository;
+
+use App\Service\UserDataService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,6 +15,26 @@ use Symfony\Component\Routing\Attribute\Route;
 class MainController extends AbstractController
 {
     #[Route('/', name: 'app_main')]
+    public function index(Request $request, UserDataService $userDataService): Response
+    {
+        $user = $this->getUser();
+
+        // Récupérer les paramètres du filtre
+        $context = $request->query->get('context');
+        $name = $request->query->get('name');
+
+        // Utiliser le repository via le service
+        $toShow = $userDataService->getCardRep()->findByFilter($context, $name, $user);
+
+        // Récupérer les autres données utilisateur via le service
+        $userData = $userDataService->getUserData($user);
+
+        return $this->render('main/index.html.twig', array_merge([
+            'toShow' => $toShow,
+        ], $userData));
+    }
+
+    /* #[Route('/', name: 'app_main')]
     public function index(Request $request, CardRepository $cardRep, UserRepository $userRep, FolderRepository $folderRep, EntityManagerInterface $em): Response
     {
         $user = $this->getUser();
@@ -74,7 +93,7 @@ class MainController extends AbstractController
             'matches' => $matches,
             'exchangeData' => $exchangeData,
         ]);
-    }
+    } */
 
     #[Route('/addFolder/{cardId}', name: 'app_addFolder', methods: ['POST'])]
     public function addFolder(
@@ -112,7 +131,7 @@ class MainController extends AbstractController
         $user->addWish($card);
         $em->persist($user);
         $em->flush();
-        return $this->redirectToRoute('app_main');
+        return $this->redirect($this->generateUrl('app_main') . '#card' . $cardId);
     }
 
     #[Route('/removeWish/{cardId}', name: 'app_removeWish')]
@@ -123,6 +142,19 @@ class MainController extends AbstractController
         $user->removeWish($card);
         $em->persist($user);
         $em->flush();
-        return $this->redirectToRoute('app_main');
+        return $this->redirect($this->generateUrl('app_main') . '#card' . $cardId);
+    }
+
+    #[Route('/seeMatches/{cardId}', name: 'app_matches')]
+    public function seeMatches(CardRepository $cardRep, UserDataService $userDataService, int $cardId)
+    {
+        $user = $this->getUser();
+        $selectedCard = $cardRep->find($cardId);
+        // Récupérer les autres données utilisateur via le service
+        $userData = $userDataService->getUserData($user);
+
+        return $this->render('/details/matches.html.twig', array_merge([
+            'card' => $selectedCard,
+        ], $userData));
     }
 }

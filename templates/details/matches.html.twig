@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}CardsFolder{% endblock %}
+{% block title %}Matches{% endblock %}
 
 {% block body %}
 {# SearchBar #}
@@ -18,12 +18,10 @@
         </form>
     </section>
 
-{# Cards #}
-    <section class="cards">
-        {% for card in toShow %}
-            <div class="card-container" id='card{{ card.id }}'>
-                {% include "/partials/card/cardMain.html.twig" %} 
-            </div>
-        {% endfor %}
-    </section>
+
+    <div class="card-container" id='card{{ card.id }}'>
+        {% include "/partials/card/card.html.twig" %} 
+    </div>
+
+
 {% endblock %}

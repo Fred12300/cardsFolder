@@ -46,10 +46,12 @@ a {
 }
 
 .card-image {
+    object-fit: contain;
     width: 98%;
     margin: 0;
     padding: 0;
     max-width: 20em;
+    max-height: 18em;
 }
 
 .card-buttons {
@@ -102,12 +104,6 @@ a {
     padding: .5em;
     border-radius: 10px;
 
-}
-
-.closedH {
-    width: 0;
-    padding: 0;
-    margin: 0;
 }
 
 .exchange {
@@ -164,4 +160,8 @@ a {
     display: flex;
     gap: .3em;
     flex-wrap: wrap;
+}
+
+.hover {
+    cursor: pointer;
 }
